@@ -23,3 +23,7 @@ It is possible to use yaml instead of ini (hosts.yml in place of the hosts.ini f
 ### Step 5
 To upgrade a debian host, one would run a playbook.
 As upgrading requires sudo access, the `-K` (or `--ask-become-pass`) option is necessary on the command : `ansible-playbook ./playbooks/upgrade_debian.yml -K`
+
+## Step 6
+To upgrade all your host, one would run a playbook.
+As upgrading requires sudo access, the `-K` (or `--ask-become-pass`) option is necessary on the command : `ansible-playbook ./playbooks/upgrade.yml -K`

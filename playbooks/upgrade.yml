@@ -1,0 +1,43 @@
+- name: Upgrade hosts with APT
+  hosts: apt
+  become: true
+  tasks:
+    - name: apt upgrade
+      ansible.builtin.apt:
+        upgrade: safe
+        autoremove: true
+        autoclean: true
+        install_recommends: true
+        update_cache: true
+        state: latest
+
+- name: Upgrade hosts with DNF
+  hosts: dnf
+  become: true
+  tasks:
+    - name: dnf upgrade
+      ansible.builtin.dnf:
+        name: "*"
+        state: latest
+        update_cache: true
+
+- name: Upgrade hosts with PACMAN
+  hosts: pacman
+  become: true
+  tasks:
+    - name: pacman upgrade
+      community.general.pacman:
+        upgrade: true
+        update_cache: true
+
+# - name: Upgrade Windows hosts
+#   hosts: windows
+#   tasks:
+#     - name: windows update
+#       ansible.windows.win_updates:
+#         category_names:
+#           - CriticalUpdates
+#           - SecurityUpdates
+#           - UpdateRollups
+#           - Updates
+#         state: installed

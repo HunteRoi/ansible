@@ -1,9 +1,0 @@
-mariadb_pkg: mariadb
-samba_pkg: samba
-
-mariadb_service: mariadb
-samba_service: smb 
-
-cfg_cmd: mariadb-install-db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
-db_path: /var/lib/mysql/mysql
-dest_smb_conf: /etc/samba/smb.conf

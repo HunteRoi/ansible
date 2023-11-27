@@ -1,0 +1,3 @@
+fileserver_pkg: samba
+fileserver_service: smb
+dest_fileserver_conf: /etc/samba/smb.conf

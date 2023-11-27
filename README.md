@@ -13,7 +13,7 @@ Some data in the inventory is redundant. One can introduce a general configurati
 Testable with `ansible all -m [win_]ping`.
 
 ### Step 3
-To retrieve the uptime for all machines, you can do the following :
+To retrieve the uptime for all machines, one can do the following :
 - `ansible all -m ansible.builtin.command -a "uptime"` on Linux/UNIX machines
 - `ansible all -m ansible.windows.win_command -a "wmic path Win32_OperatingSystem get LastBootUpTime"` on Windows
 
@@ -50,3 +50,6 @@ To install the file service and the db service, one should
 - configure both services
 - start the services
 - and not forget about variables and generic modules.
+
+### Step 5
+To simplify again their playbooks, one could use group_vars folder.

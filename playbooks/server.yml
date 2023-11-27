@@ -34,19 +34,19 @@
 
     - name: Open firewall ports
       ansible.posix.firewalld:
-        port: 80/tcp
+        port: '{{ firewall_port }}'
         permanent: true
         immediate: true
         state: enabled
       when:
         - "'firewalld.service' in ansible_facts.services"
 
-    - name: Install Apache & PHP
+    - name: Install web server & PHP
       ansible.builtin.package:
         name: '{{ apache_pkg }}, {{ php_pkg }}'
         state: present
 
-    - name: Start Apache
+    - name: Start web server
       ansible.builtin.service:
         name: '{{ apache_service }}'
         enabled: true
@@ -56,19 +56,19 @@
   hosts: dbservers
   become: true
   tasks:
-    - name: Install MariaDB
+    - name: Install database package
       ansible.builtin.package:
-        name: '{{ mariadb_pkg }}'
+        name: '{{ db_pkg }}'
         state: latest
 
-    - name: Configure MariaDB
+    - name: Configure database service
       ansible.builtin.command:
         cmd: '{{ cfg_cmd }}'
         creates: '{{ db_path }}'
 
-    - name: Start service
+    - name: Start database service
       ansible.builtin.service:
-        name: '{{ mariadb_service }}'
+        name: '{{ db_service }}'
         enabled: true
         state: started
 
@@ -76,21 +76,21 @@
   hosts: fileservers
   become: true
   tasks:
-    - name: Install Samba
+    - name: Install fileserver package
       ansible.builtin.package:
-        name: '{{ samba_pkg }}'
+        name: '{{ fileserver_pkg }}'
         state: latest
 
-    - name: Configure Samba
+    - name: Configure fileserver service
       ansible.builtin.copy:
         mode: 0644
         owner: root
         group: root
         src: files/samba/smb.conf
-        dest: '{{ dest_smb_conf }}'
+        dest: '{{ dest_fileserver_conf }}'
 
-    - name: Start Samba service
+    - name: Start fileserver service
       ansible.builtin.service:
-        name: '{{ samba_service }}'
+        name: '{{ fileserver_service }}'
         enabled: true
         state: started

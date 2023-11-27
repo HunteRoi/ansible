@@ -1,0 +1,4 @@
+db_pkg: mariadb
+db_service: mariadb
+cfg_cmd: mariadb-install-db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
+db_path: /var/lib/mysql/mysql

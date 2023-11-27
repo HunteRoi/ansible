@@ -1,8 +1,8 @@
 - name: Upgrade hosts
-  hosts: all
+  hosts: servers
+  become: true
   tasks:
     - name: Upgrade hosts with APT
-      become: true
       when: ansible_facts['os_family'] == 'Debian'
       ansible.builtin.apt:
         upgrade: safe
@@ -13,7 +13,6 @@
         state: latest
 
     - name: Upgrade hosts with DNF
-      become: true
       when: ansible_facts['os_family'] == 'RedHat'
       ansible.builtin.dnf:
         name: '*'
@@ -21,9 +20,8 @@
         update_cache: true
 
     - name: Upgrade hosts with PACMAN
-      become: true
       when: ansible_facts['os_family'] == 'Archlinux'
-      ansible.builtin.pacman:
+      community.general.pacman:
         upgrade: true
         update_cache: true
 
@@ -32,10 +30,10 @@
   become: true
   tasks:
     - name: Populate ansible facts with services
-      service_facts:
+      ansible.builtin.service_facts:
 
     - name: Open firewall ports
-      firewalld:
+      ansible.posix.firewalld:
         port: 80/tcp
         permanent: true
         immediate: true
@@ -51,5 +49,48 @@
     - name: Start Apache
       ansible.builtin.service:
         name: '{{ apache_service }}'
+        enabled: true
+        state: started
+
+- name: Install & Start database service
+  hosts: dbservers
+  become: true
+  tasks:
+    - name: Install MariaDB
+      ansible.builtin.package:
+        name: '{{ mariadb_pkg }}'
+        state: latest
+
+    - name: Configure MariaDB
+      ansible.builtin.command:
+        cmd: '{{ cfg_cmd }}'
+        creates: '{{ db_path }}'
+
+    - name: Start service
+      ansible.builtin.service:
+        name: '{{ mariadb_service }}'
+        enabled: true
+        state: started
+
+- name: Install & Start file service
+  hosts: fileservers
+  become: true
+  tasks:
+    - name: Install Samba
+      ansible.builtin.package:
+        name: '{{ samba_pkg }}'
+        state: latest
+
+    - name: Configure Samba
+      ansible.builtin.copy:
+        mode: 0644
+        owner: root
+        group: root
+        src: files/samba/smb.conf
+        dest: '{{ dest_smb_conf }}'
+
+    - name: Start Samba service
+      ansible.builtin.service:
+        name: '{{ samba_service }}'
         enabled: true
         state: started

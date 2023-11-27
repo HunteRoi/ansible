@@ -38,8 +38,15 @@ EDIT: Windows needs to reboot to install the updates properly.
 ### Step 1
 In order to install a webserver, groups can be made in the hosts.yml file (to distinguish a set of hosts from others).
 
-## Step 2
+### Step 2
 To access the webserver on their machine, one should open some ports through the firewall on Fedora.
 
-## Step 3
+### Step 3
 To simplify their playbooks and inventory, one could use host_vars folder and store their variables in a `<host>.yml` file.
+
+### Step 4
+To install the file service and the db service, one should 
+- read the docs
+- configure both services
+- start the services
+- and not forget about variables and generic modules.

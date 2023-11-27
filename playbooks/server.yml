@@ -59,3 +59,14 @@
         name: httpd
         enabled: true
         state: started
+
+    - name: Open firewall ports
+      become: true
+      firewalld:
+        port: 80/tcp
+        permanent: true
+        immediate: true
+        state: enabled
+      when:
+        - "'firewalld.service' in ansible_facts.services"
+        - ansible_facts['os_family'] == 'RedHat'

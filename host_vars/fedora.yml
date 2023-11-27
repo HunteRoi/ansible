@@ -1,0 +1,3 @@
+apache_pkg: httpd
+php_pkg: php
+apache_service: httpd

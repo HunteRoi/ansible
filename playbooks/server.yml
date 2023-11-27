@@ -1,0 +1,61 @@
+- name: Upgrade hosts
+  hosts: all
+  tasks:
+    - name: Upgrade hosts with APT
+      become: true
+      when: ansible_facts['os_family'] == 'Debian'
+      ansible.builtin.apt:
+        upgrade: safe
+        autoremove: true
+        autoclean: true
+        install_recommends: true
+        update_cache: true
+        state: latest
+
+    - name: Upgrade hosts with DNF
+      become: true
+      when: ansible_facts['os_family'] == 'RedHat'
+      ansible.builtin.dnf:
+        name: '*'
+        state: latest
+        update_cache: true
+
+    - name: Upgrade hosts with PACMAN
+      become: true
+      when: ansible_facts['os_family'] == 'Archlinux'
+      ansible.builtin.pacman:
+        upgrade: true
+        update_cache: true
+
+- name: Install & Start Apache & PHP
+  hosts: fedora, debian
+  become: true
+  tasks:
+    - name: Populate ansible facts with services
+      service_facts:
+
+    - name: Install Apache & PHP on Debian
+      when: ansible_facts['os_family'] == 'Debian'
+      ansible.builtin.apt:
+        name: apache2, php
+        state: present
+
+    - name: Start Apache on Debian
+      when: ansible_facts['os_family'] == 'Debian'
+      ansible.builtin.service:
+        name: apache2
+        enabled: true
+        state: started
+
+    - name: Install Apache & PHP on Fedora
+      when: ansible_facts['os_family'] == 'RedHat'
+      ansible.builtin.apt:
+        name: 'httpd, php'
+        state: present
+
+    - name: Start Apache on Fedora
+      when: ansible_facts['os_family'] == 'RedHat'
+      ansible.builtin.service:
+        name: httpd
+        enabled: true
+        state: started

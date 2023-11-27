@@ -24,9 +24,14 @@ It is possible to use yaml instead of ini (hosts.yml in place of the hosts.ini f
 To upgrade a debian host, one would run a playbook.
 As upgrading requires sudo access, the `-K` (or `--ask-become-pass`) option is necessary on the command : `ansible-playbook ./playbooks/upgrade_debian.yml -K`
 
-## Step 6
+### Step 6
 To upgrade all their hosts, one would run a playbook.
 As upgrading requires sudo access, the `-K` (or `--ask-become-pass`) option is necessary on the command : `ansible-playbook ./playbooks/upgrade.yml -K`
 
-## Step 7
+### Step 7
 One could upgrade all their hosts, one could also run a playbook with conditional tasks, using ansible_facts.
+
+## Groups
+
+### Step 1
+In order to install a webserver, groups can be made in the hosts.yml file (to distinguish a set of hosts from others).

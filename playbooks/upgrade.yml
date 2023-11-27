@@ -1,8 +1,9 @@
-- name: Upgrade hosts with APT
-  hosts: apt
+- name: Upgrade hosts
+  hosts: apt, dnf, pacman, windows
   become: true
   tasks:
-    - name: apt upgrade
+    - name: Upgrade hosts with APT
+      when: ansible_os_family == 'Debian'
       ansible.builtin.apt:
         upgrade: safe
         autoremove: true
@@ -11,33 +12,25 @@
         update_cache: true
         state: latest
 
-- name: Upgrade hosts with DNF
-  hosts: dnf
-  become: true
-  tasks:
-    - name: dnf upgrade
+    - name: Upgrade hosts with DNF
+      when: ansible_os_family == 'RedHat'
       ansible.builtin.dnf:
         name: "*"
         state: latest
         update_cache: true
 
-- name: Upgrade hosts with PACMAN
-  hosts: pacman
-  become: true
-  tasks:
-    - name: pacman upgrade
-      community.general.pacman:
+    - name: Upgrade hosts with PACMAN
+      when: ansible_os_family == 'Archlinux'
+      ansible.builtin.pacman:
         upgrade: true
         update_cache: true
 
-# - name: Upgrade Windows hosts
-#   hosts: windows
-#   tasks:
-#     - name: windows update
-#       ansible.windows.win_updates:
-#         category_names:
-#           - CriticalUpdates
-#           - SecurityUpdates
-#           - UpdateRollups
-#           - Updates
-#         state: installed
+    # - name: Upgrade Windows hosts
+    #   when: ansible_os_family == 'Windows'
+    #   ansible.windows.win_updates:
+    #     category_names:
+    #       - CriticalUpdates
+    #       - SecurityUpdates
+    #       - UpdateRollups
+    #       - Updates
+    #     state: installed

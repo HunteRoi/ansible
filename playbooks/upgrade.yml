@@ -27,12 +27,17 @@
         upgrade: true
         update_cache: true
 
-    # - name: Upgrade Windows hosts
-    #   when: ansible_facts['os_family'] == 'Windows'
-    #   ansible.windows.win_updates:
-    #     category_names:
-    #       - CriticalUpdates
-    #       - SecurityUpdates
-    #       - UpdateRollups
-    #       - Updates
-    #     state: installed
+    - name: Upgrade Windows hosts
+      when: ansible_facts['os_family'] == 'Windows'
+      ansible.windows.win_updates:
+        category_names:
+          - CriticalUpdates
+          - SecurityUpdates
+          - UpdateRollups
+          - Updates
+        state: installed
+
+    - name: reboot_windows
+      when: ansible_facts['os_family'] == "Windows"
+      win_reboot:
+        reboot_timeout: 3600

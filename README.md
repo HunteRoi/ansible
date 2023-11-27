@@ -31,7 +31,15 @@ As upgrading requires sudo access, the `-K` (or `--ask-become-pass`) option is n
 ### Step 7
 One could upgrade all their hosts, one could also run a playbook with conditional tasks, using ansible_facts.
 
+EDIT: Windows needs to reboot to install the updates properly.
+
 ## Groups
 
 ### Step 1
 In order to install a webserver, groups can be made in the hosts.yml file (to distinguish a set of hosts from others).
+
+## Step 2
+To access the webserver on their machine, one should open some ports through the firewall on Fedora.
+
+## Step 3
+To simplify their playbooks and inventory, one could use host_vars folder and store their variables in a `<host>.yml` file.

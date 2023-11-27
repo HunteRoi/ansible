@@ -16,3 +16,10 @@ Testable with `ansible all -m [win_]ping`.
 To retrieve the uptime for all machines, you can do the following :
 - `ansible all -m ansible.builtin.command -a "uptime"` on Linux/UNIX machines
 - `ansible all -m ansible.windows.win_command -a "wmic path Win32_OperatingSystem get LastBootUpTime"` on Windows
+
+### Step 4
+It is possible to use yaml instead of ini (hosts.yml in place of the hosts.ini file).
+
+### Step 5
+To upgrade a debian host, one would run a playbook.
+As upgrading requires sudo access, the `-K` (or `--ask-become-pass`) option is necessary on the command : `ansible-playbook ./playbooks/upgrade_debian.yml -K`

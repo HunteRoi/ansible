@@ -27,41 +27,14 @@
         upgrade: true
         update_cache: true
 
-- name: Install & Start Apache & PHP
-  hosts: fedora, debian
+- name: Install & Start web service & PHP
+  hosts: webservers
   become: true
   tasks:
     - name: Populate ansible facts with services
       service_facts:
 
-    - name: Install Apache & PHP on Debian
-      when: ansible_facts['os_family'] == 'Debian'
-      ansible.builtin.apt:
-        name: apache2, php
-        state: present
-
-    - name: Start Apache on Debian
-      when: ansible_facts['os_family'] == 'Debian'
-      ansible.builtin.service:
-        name: apache2
-        enabled: true
-        state: started
-
-    - name: Install Apache & PHP on Fedora
-      when: ansible_facts['os_family'] == 'RedHat'
-      ansible.builtin.apt:
-        name: 'httpd, php'
-        state: present
-
-    - name: Start Apache on Fedora
-      when: ansible_facts['os_family'] == 'RedHat'
-      ansible.builtin.service:
-        name: httpd
-        enabled: true
-        state: started
-
     - name: Open firewall ports
-      become: true
       firewalld:
         port: 80/tcp
         permanent: true
@@ -69,4 +42,14 @@
         state: enabled
       when:
         - "'firewalld.service' in ansible_facts.services"
-        - ansible_facts['os_family'] == 'RedHat'
+
+    - name: Install Apache & PHP
+      ansible.builtin.package:
+        name: '{{ apache_pkg }}, {{ php_pkg }}'
+        state: present
+
+    - name: Start Apache
+      ansible.builtin.service:
+        name: '{{ apache_service }}'
+        enabled: true
+        state: started

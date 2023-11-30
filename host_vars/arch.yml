@@ -1,0 +1,5 @@
+apache_pkg: apache
+apache_service: httpd
+python_pkg: python-bottle
+glances_service_src_path: files/services/glances.service
+glances_conf_path: /usr/share/doc/glances/glances.conf

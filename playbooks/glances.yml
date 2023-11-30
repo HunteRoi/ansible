@@ -1,0 +1,140 @@
+- name: Upgrade hosts
+  tags: update, package
+  hosts: linux
+  become: true
+  tasks:
+    - name: Upgrade hosts with APT
+      tags: apt, debian
+      when: ansible_facts['os_family'] == 'Debian'
+      ansible.builtin.apt:
+        upgrade: safe
+        autoremove: true
+        autoclean: true
+        install_recommends: true
+        update_cache: true
+        state: latest
+
+    - name: Upgrade hosts with DNF
+      tags: dnf, redhat
+      when: ansible_facts['os_family'] == 'RedHat'
+      ansible.builtin.dnf:
+        name: '*'
+        state: latest
+        update_cache: true
+
+    - name: Upgrade hosts with PACMAN
+      tags: pacman, archlinux
+      when: ansible_facts['os_family'] == 'Archlinux'
+      community.general.pacman:
+        upgrade: true
+        update_cache: true
+
+- name: Deploy web accessible password protected glances
+  tags: glances, password, web
+  hosts: linux
+  become: true
+  tasks:
+    - name: Install requirements
+      tags: install, package, python
+      ansible.builtin.package:
+        name: '{{ python_pkg }}'
+        state: present
+
+    - name: Install glances
+      tags: install, package, glances
+      ansible.builtin.package:
+        name: 'glances'
+        state: present
+
+    - name: Configure password for glances
+      tags: configure, password, glances
+      ansible.builtin.lineinfile:
+        path: '{{ glances_conf_path }}'
+        regexp: '^#default=defaultpassword'
+        line: 'default=test'
+
+    - name: Create service for glances
+      tags: service, glances
+      ansible.builtin.copy:
+        src: '{{ glances_service_src_path }}'
+        dest: /etc/systemd/system/glances.service
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Reload systemd daemon
+      tags: systemd
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Start service
+      tags: start, service, glances
+      ansible.builtin.service:
+        name: 'glances'
+        enabled: true
+        state: started
+
+- name: Install & Start web service
+  tags: web
+  hosts: linux
+  become: true
+  tasks:
+    - name: Populate ansible facts with services
+      tags: always, service_facts
+      ansible.builtin.service_facts:
+
+    - name: Open firewall ports
+      tags: firewalld
+      ansible.posix.firewalld:
+        port: '{{ firewall_port }}'
+        permanent: true
+        immediate: true
+        state: enabled
+      when:
+        - "'firewalld.service' in ansible_facts.services"
+
+    - name: Install web server
+      tags: install, package
+      ansible.builtin.package:
+        name: '{{ apache_pkg }}'
+        state: present
+
+    - name: Configure web server
+      when: ansible_facts['os_family'] == 'Archlinux'
+      tags: configure, web, service, arch
+      block:
+        - name: Enable proxy module
+          tags: configure, service, proxy, httpd
+          lineinfile:
+            path: /etc/httpd/conf/httpd.conf
+            regexp: '^#LoadModule proxy_module'
+            line: 'LoadModule proxy_module modules/mod_proxy.so'
+
+        - name: Enable proxy http module
+          tags: configure, service, proxy, http, httpd
+          lineinfile:
+            path: /etc/httpd/conf/httpd.conf
+            regexp: '^#LoadModule proxy_http_module'
+            line: 'LoadModule proxy_http_module modules/mod_proxy_http.so'
+
+        - name: Add reverse proxy configuration
+          tags: configure, service, glances, proxy
+          ansible.builtin.copy:
+            src: files/apache/reverse_proxy.conf
+            dest: /etc/httpd/glances.conf
+            owner: root
+            group: root
+            mode: '0644'
+
+        - name: Update web server configuration
+          tags: configure, service, httpd, proxy
+          ansible.builtin.lineinfile:
+            path: /etc/httpd/conf/httpd.conf
+            line: 'Include /etc/httpd/glances.conf'
+
+    - name: Start web server
+      tags: start, service
+      ansible.builtin.service:
+        name: '{{ apache_service }}'
+        enabled: true
+        state: started

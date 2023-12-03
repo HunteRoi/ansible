@@ -1,0 +1,9 @@
+[Unit]
+Description = Glances in Web Server Mode
+After = network.target
+
+[Service]
+ExecStart = /usr/local/bin/glances -w
+
+[Install]
+WantedBy = multi-user.target

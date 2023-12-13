@@ -58,7 +58,7 @@
     - name: Configure glances
       tags: configure
       ansible.builtin.copy:
-        src: 'files/glances/glances.conf'
+        src: 'files/glances/'
         dest: '{{ glances_conf_path }}'
         owner: root
         group: root

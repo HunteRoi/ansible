@@ -6,7 +6,7 @@ dependencies_pkg: python3-pip, python3-dev, python3-docker, gcc
 apache_service: apache2
 
 glances_service_src_path: files/services/glances-debian.service
-glances_conf_path: /etc/glances/glances.conf
+glances_conf_path: /etc/glances/
 apache_conf_path: /etc/apache2/conf/httpd.conf
 apache_glances_conf_path: /etc/apache2/sites-enabled/000-default.conf
 apache_glances_src_path: files/apache/debian-reverse_proxy.conf

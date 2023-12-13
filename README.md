@@ -53,3 +53,26 @@ To install the file service and the db service, one should
 
 ### Step 5
 To simplify again their playbooks, one could use group_vars folder.
+
+## Tags
+
+### Step 1
+It is possible to tag tasks, blocks and playbooks. For that, one can use the "tags" property.
+
+### Step 2
+To install glances on all machines, one should play with services, pip and distro's package manager
+as well as firewall rules.
+It is also important to remember proxy modules for Apache/HTTPD and SELinux on Fedora that prevents interaction
+from applications that are not authorized.
+
+### Step 3
+Protecting one's glances app on one's machine is quite a trick if not known beforehand.
+The documentation says to use `--username` and `--password` to generate a password for a specific username.
+Once this step is done, you can use the `-u <username>` option to start the application with that user required for
+authentication.
+
+For a playbook to work, one can provide the password directly into a file named with the username
+and update the glances.conf file to point to the location where the .pwd file is copied.
+
+NB: especially for Fedora, it is important to check firewall rules and SELinux restrictions.
+NB2: a generated script on Fedora does not work on Debian/Archlinux, neither is one generated on Debian/Archlinux working on Fedora.

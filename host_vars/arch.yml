@@ -5,7 +5,7 @@ dependencies_pkg: python-bottle
 apache_service: httpd
 
 glances_service_src_path: files/services/glances.service
-glances_conf_path: /usr/share/doc/glances/glances.conf
+glances_conf_path: /etc/glances/
 apache_conf_path: /etc/httpd/conf/httpd.conf
 apache_glances_conf_path: /etc/httpd/conf/glances.conf
 apache_glances_src_path: files/apache/arch-reverse_proxy.conf

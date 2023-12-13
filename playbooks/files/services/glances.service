@@ -3,7 +3,7 @@ Description = Glances in Web Server Mode
 After = network.target
 
 [Service]
-ExecStart = /usr/bin/glances -w
+ExecStart = /usr/bin/glances -C /etc/glances/glances.conf -w
 
 [Install]
 WantedBy = multi-user.target

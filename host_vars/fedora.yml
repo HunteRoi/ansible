@@ -6,6 +6,6 @@ dependencies_pkg: python-devel, python-docker, gcc, lm_sensors
 apache_service: httpd
 
 glances_service_src_path: files/services/glances.service
-glances_conf_path: /etc/glances/glances.conf
+glances_conf_path: /etc/glances/
 apache_glances_conf_path: /etc/httpd/conf.d/glances.conf
 apache_glances_src_path: files/apache/fedora-reverse_proxy.conf

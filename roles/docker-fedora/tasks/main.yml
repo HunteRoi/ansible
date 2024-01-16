@@ -1,0 +1,52 @@
+- name: Set up repo
+  package:
+    name: dnf-plugins-core
+    state: present
+  when: ansible_facts['os_family'] == "RedHat"
+
+- name: Add Docker repo
+  yum_repository:
+    name: Docker
+    description: Docker repository
+    baseurl: https://download.docker.com/linux/fedora/$releasever/$basearch/stable
+    gpgcheck: yes
+  when: ansible_facts['os_family'] == "RedHat"
+
+- name: Add Docker GPG key
+  rpm_key:
+    state: present
+    key: https://download.docker.com/linux/fedora/gpg
+  when: ansible_facts['os_family'] == "RedHat"
+
+- name: update_fedora
+  dnf:
+    update_cache: yes
+    name: '*'
+    state: latest
+  changed_when: false
+  when: ansible_facts['os_family'] == "RedHat"
+
+- name: Install Docker
+  package:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ docker }}"
+  when: ansible_facts['os_family'] == "RedHat"
+
+- name: Load ip_tables module
+  command: modprobe ip_tables
+  when: ansible_facts['os_family'] == "RedHat"
+
+- name: Enable and Start Docker
+  service:
+    name: docker
+    state: started
+    enabled: yes
+  when: ansible_facts['os_family'] == "RedHat"
+
+- name: Deploy hello-world Docker container
+  docker_container:
+    name: hello-world
+    image: hello-world
+    state: started
+  when: ansible_facts['os_family'] == "RedHat"

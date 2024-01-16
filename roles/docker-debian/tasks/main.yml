@@ -1,0 +1,69 @@
+- name: install requirements
+  package:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ items }}"
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Create directory for keyrings
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Download and install Docker GPG key
+  ansible.builtin.apt_key:
+    url: https://download.docker.com/linux/debian/gpg
+    state: present
+    keyring: /etc/apt/keyrings/docker.gpg
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Obtenir l'architecture du système
+  command: dpkg --print-architecture
+  register: dpkg_arch
+  changed_when: false
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Obtenir le nom de code de la version de Debian
+  command: bash -c ". /etc/os-release && echo $VERSION_CODENAME"
+  register: debian_codename
+  changed_when: false
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Ajouter le dépôt Docker à la liste des sources APT
+  copy:
+    content: "deb [arch={{ dpkg_arch.stdout }} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian {{ debian_codename.stdout }} stable"
+    dest: /etc/apt/sources.list.d/docker.list
+    owner: root
+    group: root
+    mode: '0644'
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: update_debian
+  apt :
+    update_cache: yes
+    upgrade: yes
+  changed_when: false
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Install Docker
+  package:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ docker }}"
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: enable and start docker
+  service:
+    name: docker
+    state: started
+    enabled: yes
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Deploy hello-world Docker container
+  docker_container:
+    name: hello-world
+    image: hello-world
+    state: started
+  when: ansible_facts['os_family'] == "Debian"

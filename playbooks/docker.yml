@@ -1,0 +1,7 @@
+- hosts: linux
+  become: true
+  tags: docker
+  roles:
+    - docker-debian
+    - docker-arch
+    - docker-fedora

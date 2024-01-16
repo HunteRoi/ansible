@@ -1,0 +1,15 @@
+docker: 
+  - python-setuptools
+  - python-pip
+  - python-requests
+  - docker
+  - docker-compose
+  - iptables
+  - linux-headers
+  - linux
+  - fuse-overlayfs
+  - bridge-utils
+
+modules:
+  - overlay
+  - br_netfilter

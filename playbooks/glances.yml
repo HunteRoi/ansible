@@ -1,4 +1,4 @@
-- name: Upgrade hosts
+- name: Install and deploy Glances
   tags: update, package
   hosts: linux
   become: true
@@ -7,131 +7,12 @@
       ansible.builtin.include_role:
         name: upgrade-system
 
-- name: Deploy web accessible password protected glances
-  tags: glances, password, web
-  hosts: linux
-  become: true
-  tasks:
-    - name: Install glances by role
+    - name: Install web accessible password protected glances
+      tags: glances, password, web
       ansible.builtin.include_role:
         name: glances
 
-- name: Install & Start web service
-  tags: web
-  hosts: linux
-  become: true
-  tasks:
-    - name: Populate ansible facts with services
-      tags: always, service_facts
-      ansible.builtin.service_facts:
-
-    - name: Open firewall ports with firewalld
-      tags: firewalld, port
-      when: "'firewalld.service' in ansible_facts.services"
-      loop: '{{ firewall_ports }}'
-      ansible.posix.firewalld:
-        port: '{{ item }}'
-        permanent: true
-        immediate: true
-        state: enabled
-
-    - name: Install web server
-      tags: install, package
-      ansible.builtin.package:
-        name: '{{ apache_pkg }}'
-        state: present
-
-    - name: Configure web server on Arch
-      when: ansible_facts['os_family'] == 'Archlinux'
-      tags: configure, web, service, arch
-      block:
-        - name: Add reverse proxy configuration
-          tags: configure, service, glances, proxy
-          ansible.builtin.copy:
-            src: files/apache/reverse_proxy.conf
-            dest: '{{ apache_glances_conf_path }}'
-            owner: root
-            group: root
-            mode: '0644'
-
-        - name: Enable proxy module
-          tags: configure, service, proxy, httpd
-          ansible.builtin.lineinfile:
-            path: '{{ apache_conf_path }}'
-            regexp: '^#LoadModule proxy_module'
-            line: 'LoadModule proxy_module modules/mod_proxy.so'
-
-        - name: Enable proxy http module
-          tags: configure, service, proxy, http, httpd
-          ansible.builtin.lineinfile:
-            path: '{{ apache_conf_path }}'
-            regexp: '^#LoadModule proxy_http_module'
-            line: 'LoadModule proxy_http_module modules/mod_proxy_http.so'
-
-        - name: Update web server configuration
-          tags: configure, service, proxy, httpd, arch
-          when: ansible_facts['os_family'] == 'Archlinux'
-          ansible.builtin.lineinfile:
-            path: '{{ apache_conf_path }}'
-            line: 'Include conf/glances.conf'
-
-        - name: Allow HTTPD as reverse proxy in SELinux
-          tags: redhat, seboolean, selinux, httpd, redhat
-          when: ansible_facts['os_family'] == 'RedHat'
-          ansible.posix.seboolean:
-            name: httpd_can_network_connect
-            state: true
-            persistent: true
-
-    - name: Configure web server on Debian
-      when: ansible_facts['os_family'] == 'Debian'
-      tags: configure, web, service, arch
-      block:
-        - name: Add reverse proxy configuration
-          tags: configure, service, glances, proxy
-          ansible.builtin.copy:
-            src: files/apache/reverse_proxy.conf
-            dest: '{{ apache_glances_conf_path }}'
-            owner: root
-            group: root
-            mode: '0644'
-
-        - name: Enable proxy module
-          tags: configure, service, proxy, httpd
-          community.general.apache2_module:
-            name: 'proxy'
-            state: present
-
-        - name: Enable proxy http module
-          tags: configure, service, proxy, http, httpd
-          community.general.apache2_module:
-            name: 'proxy_http'
-            state: present
-
-    - name: Configure web server on RedHat
-      when: ansible_facts['os_family'] == 'RedHat'
-      tags: configure, web, service, arch
-      block:
-        - name: Add reverse proxy configuration
-          tags: configure, service, glances, proxy
-          ansible.builtin.copy:
-            src: files/apache/reverse_proxy.conf
-            dest: '{{ apache_glances_conf_path }}'
-            owner: root
-            group: root
-            mode: '0644'
-
-        - name: Allow HTTPD as reverse proxy in SELinux
-          tags: redhat, seboolean, selinux, httpd, redhat
-          when: ansible_facts['os_family'] == 'RedHat'
-          ansible.posix.seboolean:
-            name: httpd_can_network_connect
-            state: true
-            persistent: true
-
-    - name: Start web server
-      tags: start, service
-      ansible.builtin.service:
-        name: '{{ apache_service }}'
-        enabled: true
-        state: restarted
+    - name: Install & Start web service
+      tags: web
+      ansible.builtin.include_role:
+        name: glances-web-service

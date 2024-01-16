@@ -80,3 +80,37 @@ As a generated password on Fedora does not work on Debian/Archlinux, neither is 
  it does unfortunately prevents to generate a single password file on a machine and export it to several others.
 
 This means that the step one's supposed to do is to generate the password on the machine.
+
+## Roles
+
+### Step 1
+Roles can be imported from Ansible Galaxy using the `ansible-galaxy install <name> -p <path>` command.
+
+e.g. : `ansible-galaxy install vincentclee.glances -p ./roles`
+
+As one's probably using a custom roles path, the `ansible.cfg` file should be updated to have a new variable `roles_path=./roles` 
+so that the role can be discovered.
+
+### Step 2
+One can create custom roles by following a simple guide:
+1. create a folder in `./roles` with your role's name
+2. add the following tree :
+```
+- defaults
+-- main.yml
+- files
+-- main.yml
+- handlers
+-- main.yml
+- library
+-- custom_module.py
+- meta
+-- main.yml
+- tasks
+-- main.yml
+- templates
+-- main.yml
+- vars
+-- main.yml
+```
+

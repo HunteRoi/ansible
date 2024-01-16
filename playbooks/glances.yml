@@ -34,65 +34,9 @@
   hosts: linux
   become: true
   tasks:
-    - name: Install requirements
-      tags: install, package, python
-      ansible.builtin.package:
-        name: '{{ dependencies_pkg }}'
-        state: present
-
-    - name: Install glances as package
-      tags: install, package
-      when: ansible_facts['os_family'] == 'Archlinux' or ansible_facts['os_family'] == 'RedHat'
-      ansible.builtin.package:
-        name: '{{ glances_pkg }}'
-        state: present
-
-    - name: Install glances with pip
-      tags: install, pip
-      when: ansible_facts['os_family'] == 'Debian'
-      ansible.builtin.pip:
-        name: '{{ glances_pkg }}'
-        state: present
-        extra_args: --break-system-packages
-
-    - name: Configure glances
-      tags: configure
-      ansible.builtin.copy:
-        src: 'files/glances/glances.conf'
-        dest: '{{ glances_conf_path }}glances.conf'
-        owner: root
-        group: root
-        mode: '0644'
-
-    - name: Add password file
-      tags: configure, password
-      ansible.builtin.copy:
-        src: 'files/glances/hunteroi-{{ inventory_hostname_short }}.pwd'
-        dest: '{{ glances_conf_path }}hunteroi.pwd'
-        owner: root
-        group: root
-        mode: '0644'
-
-    - name: Create service for glances
-      tags: service
-      ansible.builtin.copy:
-        src: '{{ glances_service_src_path }}'
-        dest: /etc/systemd/system/glances.service
-        owner: root
-        group: root
-        mode: '0644'
-
-    - name: Reload systemd daemon
-      tags: systemd
-      ansible.builtin.systemd:
-        daemon_reload: true
-
-    - name: Start service
-      tags: start, service
-      ansible.builtin.service:
-        name: 'glances'
-        enabled: true
-        state: restarted
+    - name: Install glances by role
+      ansible.builtin.include_role:
+        name: glances
 
 - name: Install & Start web service
   tags: web

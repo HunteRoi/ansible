@@ -1,11 +1,9 @@
-apache_pkg: httpd
-php_pkg: php
 glances_pkg: glances
 dependencies_pkg: python-devel, python-docker, gcc, lm_sensors
 
-apache_service: httpd
+php_pkg: php
 
-glances_service_src_path: files/services/glances.service
-glances_conf_path: /etc/glances/
+apache_pkg: httpd
+apache_service: httpd
 apache_glances_conf_path: /etc/httpd/conf.d/glances.conf
 apache_glances_src_path: files/apache/fedora-reverse_proxy.conf

@@ -1,0 +1,38 @@
+# Valeurs par défaut pour tous les comptes.
+defaults
+auth           on
+tls            on
+tls_starttls   on
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+logfile        /var/log/msmtp
+
+{# Création d'un dictionnaire avec les différentes valeur, la clé OS à une liste de valeur pour chaque distro #}
+
+{% set accounts = [
+    {'os': ['Debian', 'Archlinux'], 'name': 'pro', 'host': 'smtp.office365.com', 'port': 587, 'mail': mail_pro, 'password': password_pro },
+    {'os': ['RedHat', 'Archlinux'], 'name': 'perso', 'host': 'smtp.office365.com', 'port': 587, 'mail': mail_perso, 'password': password_perso }
+] %}
+
+{% set ns = namespace(default_exists=false) %}
+
+{% for account in accounts %}
+{% if ansible_facts['os_family'] in account.os %}
+# {{ account.name }}
+account        {{ account.name }}
+{% if account.auth is defined %}
+auth           {{ account.auth }}
+{% endif %}
+host           {{ account.host }}
+port           {{ account.port }}
+from           {{ account.mail }}
+user           {{ account.mail }}
+password       {{ account.password }}
+
+{% if not ns.default_exists %}
+# Définir le compte par défaut
+account default : {{ account.name }}
+{% set ns.default_exists = true %}
+{% endif %}
+
+{% endif %}
+{% endfor %}

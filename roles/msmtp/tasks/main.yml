@@ -1,0 +1,14 @@
+- name: Installer msmtp
+  tags: msmtp, install
+  ansible.builtin.package:
+    name: '{{ msmtp_pkg}}'
+    state: present
+
+- name: Configurer msmtp
+  tags: msmtp, configure
+  ansible.builtin.template:
+    src: templates/msmtp.config.j2
+    dest: '{{ msmtp_conf_path }}'
+    owner: root
+    group: root
+    mode: '0644'

@@ -1,0 +1,7 @@
+- name: Install and deploy MSMTP
+  hosts: linux
+  become: true
+  vars_files: ../msmtp-password-vault
+  roles:
+    - upgrade-system
+    - msmtp

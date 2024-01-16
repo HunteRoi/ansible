@@ -1,0 +1,5 @@
+mail_perso : titidevresse1999@hotmail.be
+mail_pro: tinael.devresse@hotmail.com
+
+msmtp_pkg: msmtp
+msmtp_conf_path: /etc/msmtprc

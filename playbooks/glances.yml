@@ -1,13 +1,6 @@
 - name: Install and deploy Glances
-  tags: update, package
   hosts: linux
   become: true
-  tasks:
-    - name: Upgrade hosts by role
-      ansible.builtin.include_role:
-        name: upgrade-system
-
-    - name: Install & Start web service
-      tags: web
-      ansible.builtin.include_role:
-        name: glances-web-service
+  roles:
+    - upgrade-system
+    - glances-web-service

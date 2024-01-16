@@ -1,8 +1,6 @@
 glances_pkg: glances[all]
 dependencies_pkg: python3-pip, python3-dev, python3-docker, gcc
 
-php_pkg: php
-
 apache_pkg: apache2
 apache_service: apache2
 apache_glances_conf_path: /etc/apache2/sites-enabled/glances.conf

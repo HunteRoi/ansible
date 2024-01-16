@@ -1,60 +1,14 @@
-- name: Upgrade hosts
-  tags: update, package
-  hosts: linux
+- name: Install all servers
+  hosts: dbservers, fileservers, webservers
   become: true
-  tasks:
-    - name: Upgrade hosts by role
-      ansible.builtin.include_role:
-        name: upgrade-system
-
-- name: Install & Start web service & PHP
-  tags: web, php
-  hosts: webservers
-  become: true
-  tasks:
-    - name: Populate ansible facts with services
-      tags: always, service_facts
-      ansible.builtin.service_facts:
-
-    - name: Open firewall ports
-      tags: firewalld
-      ansible.posix.firewalld:
-        port: '{{ firewall_port }}'
-        permanent: true
-        immediate: true
-        state: enabled
-      when:
-        - "'firewalld.service' in ansible_facts.services"
-
-    - name: Install web server & PHP
-      tags: install, package
-      ansible.builtin.package:
-        name: '{{ apache_pkg }}, {{ php_pkg }}'
-        state: present
-
+  handlers:
     - name: Start web server
       tags: start, service
       ansible.builtin.service:
         name: '{{ apache_service }}'
         enabled: true
         state: started
-
-- name: Install & Start database service
-  tags: database
-  hosts: dbservers
-  become: true
-  tasks:
-    - name: Install database package
-      tags: install, package
-      ansible.builtin.package:
-        name: '{{ db_pkg }}'
-        state: latest
-
-    - name: Configure database service
-      tags: configure, service
-      ansible.builtin.command:
-        cmd: '{{ cfg_cmd }}'
-        creates: '{{ db_path }}'
+      listen: 'restart web service'
 
     - name: Start database service
       tags: start, service
@@ -62,26 +16,7 @@
         name: '{{ db_service }}'
         enabled: true
         state: started
-
-- name: Install & Start file service
-  tags: files
-  hosts: fileservers
-  become: true
-  tasks:
-    - name: Install fileserver package
-      tags: install, package
-      ansible.builtin.package:
-        name: '{{ fileserver_pkg }}'
-        state: latest
-
-    - name: Configure fileserver service
-      tags: configure, service
-      ansible.builtin.copy:
-        mode: 0644
-        owner: root
-        group: root
-        src: files/samba/smb.conf
-        dest: '{{ dest_fileserver_conf }}'
+      listen: 'restart db service'
 
     - name: Start fileserver service
       tags: start, service
@@ -89,3 +24,82 @@
         name: '{{ fileserver_service }}'
         enabled: true
         state: started
+      listen: 'restart file service'
+
+  pre_tasks:
+    - name: Populate ansible facts with services
+      tags: always, service_facts
+      ansible.builtin.service_facts:
+
+    - name: Upgrade hosts by role
+      ansible.builtin.include_role:
+        name: upgrade-system
+
+  tasks:
+    - name: Install web servers
+      when: inventory_hostname_short in groups['webservers']
+      tags: web, php
+      block:
+        - name: Open firewall ports
+          tags: firewalld
+          ansible.posix.firewalld:
+            port: '{{ firewall_port }}'
+            permanent: true
+            immediate: true
+            state: enabled
+          when:
+            - "'firewalld.service' in ansible_facts.services"
+
+        - name: Install web server & PHP
+          tags: install, package
+          ansible.builtin.package:
+            name: '{{ apache_pkg }}, {{ php_pkg }}'
+            state: present
+      always:
+        - name: Restart web service
+          ansible.builtin.command: echo "Restarting web service..."
+          notify: "restart web service"
+          changed_when: true
+
+    - name: Install db servers
+      when: inventory_hostname_short in groups['dbservers']
+      block:
+        - name: Install database package
+          tags: install, package
+          ansible.builtin.package:
+            name: '{{ db_pkg }}'
+            state: latest
+
+        - name: Configure database service
+          tags: configure, service
+          ansible.builtin.command:
+            cmd: '{{ cfg_cmd }}'
+            creates: '{{ db_path }}'
+      always:
+        - name: Restart db service
+          ansible.builtin.command: echo 'Restarting db service...'
+          notify: 'restart db service'
+          changed_when: true
+
+    - name: Install file servers
+      when: inventory_hostname_short in groups['fileservers']
+      block:
+        - name: Install fileserver package
+          tags: install, package
+          ansible.builtin.package:
+            name: '{{ fileserver_pkg }}'
+            state: latest
+
+        - name: Configure fileserver service
+          tags: configure, service
+          ansible.builtin.copy:
+            mode: 0644
+            owner: root
+            group: root
+            src: files/samba/smb.conf
+            dest: '{{ dest_fileserver_conf }}'
+      always:
+        - name: Restart file service
+          ansible.builtin.command: echo 'Restarting file service...'
+          notify: 'restart file service'
+          changed_when: true

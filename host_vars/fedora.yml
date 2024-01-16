@@ -1,8 +1,6 @@
 glances_pkg: glances
 dependencies_pkg: python-devel, python-docker, gcc, lm_sensors
 
-php_pkg: php
-
 apache_pkg: httpd
 apache_service: httpd
 apache_glances_conf_path: /etc/httpd/conf.d/glances.conf

@@ -5,4 +5,3 @@ apache_pkg: apache
 apache_service: httpd
 apache_conf_path: /etc/httpd/conf/httpd.conf
 apache_glances_conf_path: /etc/httpd/conf/glances.conf
-apache_glances_src_path: files/apache/arch-reverse_proxy.conf

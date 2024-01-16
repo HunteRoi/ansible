@@ -70,7 +70,7 @@
         - name: Add reverse proxy configuration
           tags: configure, service, glances, proxy
           ansible.builtin.copy:
-            src: '{{ apache_glances_src_path }}'
+            src: files/apache/reverse_proxy.conf
             dest: '{{ apache_glances_conf_path }}'
             owner: root
             group: root
@@ -112,7 +112,7 @@
         - name: Add reverse proxy configuration
           tags: configure, service, glances, proxy
           ansible.builtin.copy:
-            src: '{{ apache_glances_src_path }}'
+            src: files/apache/reverse_proxy.conf
             dest: '{{ apache_glances_conf_path }}'
             owner: root
             group: root
@@ -137,7 +137,7 @@
         - name: Add reverse proxy configuration
           tags: configure, service, glances, proxy
           ansible.builtin.copy:
-            src: '{{ apache_glances_src_path }}'
+            src: files/apache/reverse_proxy.conf
             dest: '{{ apache_glances_conf_path }}'
             owner: root
             group: root

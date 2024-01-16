@@ -1,0 +1,2 @@
+user: ansible
+sshd_conf_path: /etc/ssh/sshd_config

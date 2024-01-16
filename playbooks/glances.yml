@@ -7,11 +7,6 @@
       ansible.builtin.include_role:
         name: upgrade-system
 
-    - name: Install web accessible password protected glances
-      tags: glances, password, web
-      ansible.builtin.include_role:
-        name: glances
-
     - name: Install & Start web service
       tags: web
       ansible.builtin.include_role:

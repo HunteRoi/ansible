@@ -1,6 +1,7 @@
 - name: Install and deploy Glances
   hosts: linux
   become: true
+  vars_files: ../glances-password-vault
   roles:
     - upgrade-system
     - glances-web-service

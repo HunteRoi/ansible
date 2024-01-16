@@ -1,5 +1,6 @@
 glances_pkg: glances
 dependencies_pkg: python-bottle
+username: hunteroi-arch
 
 apache_pkg: apache
 apache_service: httpd

@@ -1,9 +1,0 @@
-[Unit]
-Description = Glances in Web Server Mode
-After = network.target
-
-[Service]
-ExecStart = /usr/local/bin/glances -C /etc/glances/glances.conf -w -u hunteroi
-
-[Install]
-WantedBy = multi-user.target

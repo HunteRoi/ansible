@@ -1,5 +1,6 @@
 glances_pkg: glances
 dependencies_pkg: python-devel, python-docker, gcc, lm_sensors
+username: hunteroi-fedora
 
 apache_pkg: httpd
 apache_service: httpd

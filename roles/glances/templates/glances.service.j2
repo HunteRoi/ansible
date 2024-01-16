@@ -3,7 +3,7 @@ Description = Glances in Web Server Mode
 After = network.target
 
 [Service]
-ExecStart = /usr{% if inventory_hostname_short == 'debian' %}/local{% endif %}/bin/glances -C /etc/glances/glances.conf -w -u hunteroi
+ExecStart = /usr{% if inventory_hostname_short == 'debian' %}/local{% endif %}/bin/glances -C {{ glances_conf_path }}glances.conf -w -u {{ username }}
 
 [Install]
 WantedBy = multi-user.target

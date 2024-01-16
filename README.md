@@ -65,7 +65,7 @@ as well as firewall rules.
 It is also important to remember proxy modules for Apache/HTTPD and SELinux on Fedora that prevents interaction
 from applications that are not authorized.
 
-### Step 3
+### Step 3 - optional & unrecommended
 Protecting one's glances app on one's machine is quite a trick if not known beforehand.
 The documentation says to use `--username` and `--password` to generate a password for a specific username.
 Once this step is done, you can use the `-u <username>` option to start the application with that user required for
@@ -75,4 +75,8 @@ For a playbook to work, one can provide the password directly into a file named 
 and update the glances.conf file to point to the location where the .pwd file is copied.
 
 NB: especially for Fedora, it is important to check firewall rules and SELinux restrictions.
-NB2: a generated script on Fedora does not work on Debian/Archlinux, neither is one generated on Debian/Archlinux working on Fedora.
+
+As a generated password on Fedora does not work on Debian/Archlinux, neither is one generated on Debian/Archlinux working on Fedora,
+ it does unfortunately prevents to generate a single password file on a machine and export it to several others.
+
+This means that the step one's supposed to do is to generate the password on the machine.

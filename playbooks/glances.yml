@@ -58,8 +58,17 @@
     - name: Configure glances
       tags: configure
       ansible.builtin.copy:
-        src: 'files/glances/'
-        dest: '{{ glances_conf_path }}'
+        src: 'files/glances/glances.conf'
+        dest: '{{ glances_conf_path }}glances.conf'
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Add password file
+      tags: configure, password
+      ansible.builtin.copy:
+        src: 'files/glances/hunteroi-{{ inventory_hostname_short }}.pwd'
+        dest: '{{ glances_conf_path }}hunteroi.pwd'
         owner: root
         group: root
         mode: '0644'

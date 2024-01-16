@@ -1,0 +1,43 @@
+- name: Create ansible user
+  tags: configure, user, create
+  ansible.builtin.user:
+    name: ansible
+    groups: root
+
+- name: Add SSH key
+  tags: configure, ssh
+  ansible.posix.authorized_key:
+    user: ansible
+    state: present
+    key: "{{ lookup('file', '/home/hunteroi/.ssh/os_ecdsa.pub') }}" # récupère la clé dans le fichier donné en paramètre
+
+- name: Add sudoers file
+  tags: configure, sudoers
+  ansible.builtin.copy:
+    src: files/sudoers_file
+    dest: /etc/sudoers.d/ansible
+    owner: root
+    group: root
+    mode: 0440
+
+- name: Disable root login
+  tags: configure, rootlogin
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^PermitRootLogin'
+    line: 'PermitRootLogin no'
+    state: present
+
+- name: Disable password authentication
+  tags: configure, passwordauth
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication'
+    line: 'PasswordAuthentication no'
+    state: present
+
+- name: Restart service
+  tags: service, restart
+  ansible.builtin.service:
+    name: sshd
+    state: restarted

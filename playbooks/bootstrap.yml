@@ -1,0 +1,5 @@
+- hosts: linux
+  become: true
+  remote_user: hunteroi # to be updated depending on what account to use to setup the ansible user
+  roles:
+  - bootstrap

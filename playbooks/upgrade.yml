@@ -1,43 +1,5 @@
 - name: Upgrade hosts
   hosts: debian, fedora, arch, windows
-  tasks:
-    - name: Upgrade hosts with APT
-      become: true
-      when: ansible_facts['os_family'] == 'Debian'
-      ansible.builtin.apt:
-        upgrade: safe
-        autoremove: true
-        autoclean: true
-        install_recommends: true
-        update_cache: true
-        state: latest
-
-    - name: Upgrade hosts with DNF
-      become: true
-      when: ansible_facts['os_family'] == 'RedHat'
-      ansible.builtin.dnf:
-        name: '*'
-        state: latest
-        update_cache: true
-
-    - name: Upgrade hosts with PACMAN
-      become: true
-      when: ansible_facts['os_family'] == 'Archlinux'
-      community.general.pacman:
-        upgrade: true
-        update_cache: true
-
-    - name: Upgrade Windows hosts
-      when: ansible_facts['os_family'] == 'Windows'
-      ansible.windows.win_updates:
-        category_names:
-          - CriticalUpdates
-          - SecurityUpdates
-          - UpdateRollups
-          - Updates
-        state: installed
-
-    - name: reboot_windows
-      when: ansible_facts['os_family'] == "Windows"
-      ansible.windows.win_reboot:
-        reboot_timeout: 3600
+  become: true
+  roles:
+    - upgrade-system

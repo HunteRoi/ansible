@@ -3,31 +3,9 @@
   hosts: linux
   become: true
   tasks:
-    - name: Upgrade hosts with APT
-      tags: apt, debian
-      when: ansible_facts['os_family'] == 'Debian'
-      ansible.builtin.apt:
-        upgrade: safe
-        autoremove: true
-        autoclean: true
-        install_recommends: true
-        update_cache: true
-        state: latest
-
-    - name: Upgrade hosts with DNF
-      tags: dnf, redhat
-      when: ansible_facts['os_family'] == 'RedHat'
-      ansible.builtin.dnf:
-        name: '*'
-        state: latest
-        update_cache: true
-
-    - name: Upgrade hosts with PACMAN
-      tags: pacman, archlinux
-      when: ansible_facts['os_family'] == 'Archlinux'
-      community.general.pacman:
-        upgrade: true
-        update_cache: true
+    - name: Upgrade hosts by role
+      ansible.builtin.include_role:
+        name: upgrade-system
 
 - name: Deploy web accessible password protected glances
   tags: glances, password, web

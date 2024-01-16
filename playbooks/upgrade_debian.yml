@@ -1,11 +1,5 @@
-- name: Update Debian host with APT
+- name: Upgrade Debian
   hosts: debian
   become: true
-  tasks:
-    - name: upgrade
-      ansible.builtin.apt:
-        upgrade: full
-        update_cache: true
-        autoremove: true
-        autoclean: true
-        install_recommends: true
+  roles:
+    - upgrade-system
